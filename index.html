@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>تسجيل المواقع الجغرافية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-color: #3f37c9;
+      --primary-hover: #2b2ea3;
+      --secondary-color: #4361ee;
+      --success-color: #28a745;
+      --warning-color: #f0ad4e;
+      --danger-color: #d9534f;
+      --light-gray: #f5f5f5;
+      --medium-gray: #ddd;
+      --dark-gray: #333;
+      --white: #fff;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--light-gray);
+      margin: 0;
+      padding: 20px;
+      color: var(--dark-gray);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 25px;
+      background: var(--white);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+    }
+    
+    .form-section {
+      background: var(--light-gray);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    
+    label {
+      display: block;
+      margin: 15px 0 8px;
+      font-weight: bold;
+      color: var(--dark-gray);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 5px;
+      border: 1px solid var(--medium-gray);
+      font-family: 'Tajawal', sans-serif;
+      transition: border 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(63, 55, 201, 0.2);
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      background: var(--primary-color);
+      color: var(--white);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Tajawal', sans-serif;
+      font-weight: 500;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+    
+    .btn i {
+      margin-left: 8px;
+    }
+    
+    .btn-secondary {
+      background: var(--medium-gray);
+      color: var(--dark-gray);
+    }
+    
+    .btn-secondary:hover {
+      background: #ccc;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .map-container {
+      margin-top: 30px;
+      position: relative;
+    }
+    
+    .map {
+      height: 400px;
+      border-radius: 8px;
+      border: 1px solid var(--medium-gray);
+      z-index: 1;
+    }
+    
+    .map-overlay {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      background: var(--white);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      font-size: 14px;
+    }
+    
+    .manual-label {
+      color: #666;
+      font-size: 14px;
+      margin: 10px 0;
+      text-align: center;
+    }
+    
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+      background: var(--white);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+      border: 1px solid var(--medium-gray);
+      padding: 12px;
+      text-align: center;
+    }
+    
+    th {
+      background: var(--secondary-color);
+      color: var(--white);
+      font-weight: 500;
+    }
+    
+    tr:nth-child(even) {
+      background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    tr:hover {
+      background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .action-link {
+      color: var(--success-color);
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+    .action-link:hover {
+      color: darken(var(--success-color), 10%);
+      text-decoration: underline;
+    }
+    
+    .action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 0 5px;
+      transition: all 0.3s;
+      padding: 5px;
+      border-radius: 50%;
+    }
+    
+    .edit-btn {
+      color: var(--warning-color);
+    }
+    
+    .edit-btn:hover {
+      background: rgba(240, 173, 78, 0.1);
+    }
+    
+    .delete-btn {
+      color: var(--danger-color);
+    }
+    
+    .delete-btn:hover {
+      background: rgba(217, 83, 79, 0.1);
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--white);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      transform: translateX(150%);
+      transition: transform 0.3s ease-out;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast.success {
+      background: var(--success-color);
+    }
+    
+    .toast.error {
+      background: var(--danger-color);
+    }
+    
+    .url-input {
+      direction: ltr;
+      text-align: left;
+    }
+    
+    .map-link {
+      color: #1a73e8;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .map-link:hover {
+      text-decoration: underline;
+    }
+    
+    .copy-btn {
+      background: #f1f3f4;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    
+    .copy-btn:hover {
+      background: #e8eaed;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      table {
+        display: block;
+        overflow-x: auto;
+        width: 1090px;
+      }
+      
+      .btn-group {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fas fa-map-marked-alt"></i> نظام تسجيل المواقع الجغرافية</h1>
+    
+    <div class="form-section">
+      <form id="locationForm">
+        <div class="form-row">
+          <label for="name"><i class="fas fa-user"></i> الاسم الكامل</label>
+          <input type="text" id="name" required />
+        </div>
+        
+        <div class="form-row">
+          <label for="address"><i class="fas fa-map-pin"></i> العنوان</label>
+          <input type="text" id="address" required />
+        </div>
+        
+        <div class="form-row">
+          <label><i class="fas fa-map-marker-alt"></i> تحديد الموقع</label>
+          <div class="btn-group">
+            <button type="button" class="btn" onclick="getLocation()">
+              <i class="fas fa-location-arrow"></i> تحديد الموقع تلقائيًا
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="showMapModal()">
+              <i class="fas fa-map"></i> تحديد من الخريطة
+            </button>
+          </div>
+          
+          <p class="manual-label">أو أدخل الإحداثيات يدويًا</p>
+          <label for="coords">الإحداثيات (خط العرض, خط الطول)</label>
+          <input type="text" id="coords" placeholder="مثال: 24.7136, 46.6753" />
+        </div>
+        
+        <div class="form-row">
+          <label for="googleMapUrl"><i class="fas fa-link"></i> رابط Google Map (اختياري)</label>
+          <input type="url" id="googleMapUrl" class="url-input" placeholder="https://www.google.com/maps/place/..." />
+          <small style="display: block; color: #666; margin-top: 5px;">يمكنك لصق رابط الموقع من Google Maps</small>
+        </div>
+        
+        <div class="form-row">
+          <label for="locationType"><i class="fas fa-tag"></i> نوع الموقع</label>
+          <select id="locationType">
+            <option value="منزل">منزل</option>
+            <option value="عمل">عمل</option>
+            <option value="متجر">متجر</option>
+            <option value="أخرى">أخرى</option>
+          </select>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn" id="submitBtn">
+            <i class="fas fa-save"></i> حفظ البيانات
+          </button>
+          <button type="reset" class="btn btn-secondary" id="resetBtn">
+            <i class="fas fa-undo"></i> إعادة تعيين
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="map-container">
+      <div class="map" id="map"></div>
+      <div class="map-overlay" id="mapOverlay">انقر على الخريطة لتحديد الموقع</div>
+    </div>
+    
+    <div class="data-section" style="overflow: auto;">
+      <h2><i class="fas fa-list"></i> السجلات المحفوظة</h2>
+      <div class="table-responsive">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>العنوان</th>
+              <th>نوع الموقع</th>
+              <th>الإحداثيات</th>
+              <th>الوقت</th>
+              <th>الخريطة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
+      authDomain: "datareact-58e03.firebaseapp.com",
+      databaseURL: "https://datareact-58e03-default-rtdb.firebaseio.com",
+      projectId: "datareact-58e03",
+      storageBucket: "datareact-58e03.appspot.com",
+      messagingSenderId: "123456789012",
+      appId: "1:123456789012:web:abcdef1234567890abcdef"
+    };
+    
+    const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/locations.json";
+    const form = document.getElementById("locationForm");
+    const tableBody = document.querySelector("#tableBody");
+    const mapContainer = document.getElementById("map");
+    const submitBtn = document.getElementById("submitBtn");
+    const toast = document.getElementById("toast");
+    
+    // Initialize map
+    let map = L.map(mapContainer).setView([24.7136, 46.6753], 5); // Default to Saudi Arabia
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    let marker;
+    let currentEditId = null;
+    
+    // Add click event to map
+    map.on('click', function(e) {
+      const { lat, lng } = e.latlng;
+      document.getElementById("coords").value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      updateMap(lat, lng);
+    });
+    
+    // Initialize marker
+    function updateMap(lat, lng) {
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+      } else {
+        marker = L.marker([lat, lng], {
+          draggable: true
+        }).addTo(map);
+        
+        marker.on('dragend', function() {
+          const newLatLng = marker.getLatLng();
+          document.getElementById("coords").value = `${newLatLng.lat.toFixed(6)}, ${newLatLng.lng.toFixed(6)}`;
+        });
+      }
+      
+      map.setView([lat, lng], 15);
+      document.getElementById("mapOverlay").textContent = `الإحداثيات: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+    
+    // Get current location
+    function getLocation() {
+      if (navigator.geolocation) {
+        submitBtn.innerHTML = `<span class="loading"></span> جاري تحديد الموقع...`;
+        submitBtn.disabled = true;
+        
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const lat = pos.coords.latitude.toFixed(6);
+            const lng = pos.coords.longitude.toFixed(6);
+            document.getElementById("coords").value = `${lat}, ${lng}`;
+            updateMap(parseFloat(lat), parseFloat(lng));
+            submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
+            submitBtn.disabled = false;
+            showToast('تم تحديد الموقع بنجاح', 'success');
+          },
+          err => {
+            console.error("Geolocation error:", err);
+            submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
+            submitBtn.disabled = false;
+            showToast(`تعذر الحصول على الموقع: ${err.message}`, 'error');
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        showToast("المتصفح لا يدعم تحديد الموقع الجغرافي", 'error');
+      }
+    }
+    
+    // Form submission
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById("name").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const locationType = document.getElementById("locationType").value;
+      const coordsInput = document.getElementById("coords").value.trim();
+      const googleMapUrl = document.getElementById("googleMapUrl").value.trim();
+      
+      // Validate coordinates
+      const coordsRegex = /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/;
+      if (!coordsRegex.test(coordsInput)) {
+        showToast("يرجى إدخال الإحداثيات بشكل صحيح (مثال: 24.7136, 46.6753)", 'error');
+        return;
+      }
+      
+      const [latStr, lngStr] = coordsInput.split(",").map(s => s.trim());
+      const lat = parseFloat(latStr);
+      const lng = parseFloat(lngStr);
+      
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        showToast("إحداثيات غير صالحة. يرجى التأكد من القيم المدخلة", 'error');
+        return;
+      }
+      
+      updateMap(lat, lng);
+      
+      const timestamp = new Date().toLocaleString("ar-SA", {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
+      const accuracy = "GPS";
+      
+      const data = { 
+        name, 
+        address, 
+        locationType,
+        latitude: lat, 
+        longitude: lng, 
+        googleMapUrl: googleMapUrl || null,
+        timestamp, 
+        accuracy, 
+        source: currentEditId ? "تعديل يدوي" : "إدخال يدوي"
+      };
+      
+      try {
+        submitBtn.innerHTML = `<span class="loading"></span> جاري الحفظ...`;
+        submitBtn.disabled = true;
+        
+        const method = currentEditId ? "PUT" : "POST";
+        const url = currentEditId
+          ? `https://datareact-58e03-default-rtdb.firebaseio.com/locations/${currentEditId}.json`
+          : firebaseUrl;
+        
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) throw new Error("فشل في حفظ البيانات");
+        
+        showToast(currentEditId ? "تم تحديث البيانات بنجاح" : "تم حفظ البيانات بنجاح", 'success');
+        
+        form.reset();
+        currentEditId = null;
+        submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
+        submitBtn.disabled = false;
+        
+        await loadData();
+      } catch (error) {
+        console.error("Error saving data:", error);
+        showToast("حدث خطأ أثناء حفظ البيانات", 'error');
+        submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
+        submitBtn.disabled = false;
+      }
+    });
+    
+    // Load data from Firebase
+    async function loadData() {
+      try {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">جاري تحميل البيانات...</td></tr>';
+        
+        const response = await fetch(firebaseUrl);
+        const data = await response.json();
+        
+        tableBody.innerHTML = "";
+        
+        if (!data) {
+          tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد بيانات مسجلة</td></tr>';
+          return;
+        }
+        
+        Object.entries(data).forEach(([key, entry]) => {
+          const row = document.createElement("tr");
+          
+          // تحديد رابط الخريطة الذي سيتم عرضه
+          let mapLink = '';
+          if (entry.googleMapUrl) {
+            mapLink = `<a class="map-link" href="${entry.googleMapUrl}" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> فتح في خرائط جوجل
+                      </a>`;
+          } else if (entry.latitude && entry.longitude) {
+            mapLink = `<a class="map-link" href="https://maps.google.com?q=${entry.latitude},${entry.longitude}" target="_blank">
+                        <i class="fas fa-map-marked-alt"></i> فتح بالإحداثيات
+                      </a>`;
+          } else {
+            mapLink = '--';
+          }
+          
+          row.innerHTML = `
+            <td>${entry.name || '--'}</td>
+            <td>${entry.address || '--'}</td>
+            <td>${entry.locationType || '--'}</td>
+            <td>${entry.latitude?.toFixed?.(6) || '--'}, ${entry.longitude?.toFixed?.(6) || '--'}</td>
+            <td>${entry.timestamp || '--'}</td>
+            <td>${mapLink}</td>
+            <td>
+              <button class="action-btn edit-btn" data-id="${key}" title="تعديل">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" data-id="${key}" title="حذف">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to action buttons
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.addEventListener("click", () => editEntry(btn.dataset.id));
+        });
+        
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", () => deleteEntry(btn.dataset.id));
+        });
+      } catch (error) {
+        console.error("Error loading data:", error);
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color);">حدث خطأ أثناء تحميل البيانات</td></tr>';
+      }
+    }
+    
+    // Edit entry
+    async function editEntry(id) {
+      try {
+        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/locations/${id}.json`);
+        const data = await response.json();
+        
+        if (!data) {
+          showToast("تعذر تحميل البيانات للتعديل", 'error');
+          return;
+        }
+        
+        document.getElementById("name").value = data.name || '';
+        document.getElementById("address").value = data.address || '';
+        document.getElementById("locationType").value = data.locationType || 'أخرى';
+        document.getElementById("coords").value = `${data.latitude || ''}, ${data.longitude || ''}`;
+        document.getElementById("googleMapUrl").value = data.googleMapUrl || '';
+        
+        if (data.latitude && data.longitude) {
+          updateMap(data.latitude, data.longitude);
+        }
+        
+        currentEditId = id;
+        submitBtn.innerHTML = `<i class="fas fa-save"></i> تحديث البيانات`;
+        
+        // Scroll to form
+        document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        
+        showToast("تم تحميل البيانات للتعديل", 'success');
+      } catch (error) {
+        console.error("Error editing entry:", error);
+        showToast("حدث خطأ أثناء تحميل البيانات للتعديل", 'error');
+      }
+    }
+    
+    // Delete entry
+    async function deleteEntry(id) {
+      if (!confirm("هل أنت متأكد من حذف هذا السجل؟ لا يمكن التراجع عن هذه العملية.")) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/locations/${id}.json`, {
+          method: "DELETE"
+        });
+        
+        if (!response.ok) throw new Error("فشل في حذف البيانات");
+        
+        showToast("تم حذف السجل بنجاح", 'success');
+        await loadData();
+      } catch (error) {
+        console.error("Error deleting entry:", error);
+        showToast("حدث خطأ أثناء حذف السجل", 'error');
+      }
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+      toast.textContent = message;
+      toast.className = `toast show ${type}`;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Show map modal (placeholder for future enhancement)
+    function showMapModal() {
+      showToast("هذه الميزة قيد التطوير", 'info');
+    }
+    
+    // Initialize the app
+    document.addEventListener("DOMContentLoaded", () => {
+      loadData();
+      
+      // Reset form when reset button is clicked
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        currentEditId = null;
+        submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
+      });
+    });
+  </script>
+</body>
+</html>

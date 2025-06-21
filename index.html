@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>تسجيل المواقع الجغرافية</title>
+  <title>نظام تسجيل المخالفات والمواقع الجغرافية</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -62,7 +62,7 @@
       color: var(--dark-gray);
     }
     
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 12px;
       border-radius: 5px;
@@ -71,7 +71,7 @@
       transition: border 0.3s;
     }
     
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 2px rgba(63, 55, 201, 0.2);
@@ -108,6 +108,22 @@
     
     .btn-secondary:hover {
       background: #ccc;
+    }
+    
+    .btn-success {
+      background: var(--success-color);
+    }
+    
+    .btn-success:hover {
+      background: #218838;
+    }
+    
+    .btn-whatsapp {
+      background: #25D366;
+    }
+    
+    .btn-whatsapp:hover {
+      background: #1da851;
     }
     
     .btn-group {
@@ -214,6 +230,14 @@
       background: rgba(217, 83, 79, 0.1);
     }
     
+    .whatsapp-btn {
+      color: #25D366;
+    }
+    
+    .whatsapp-btn:hover {
+      background: rgba(37, 211, 102, 0.1);
+    }
+    
     .loading {
       display: inline-block;
       width: 20px;
@@ -283,6 +307,16 @@
       background: #e8eaed;
     }
     
+    .form-row {
+      margin-bottom: 15px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
     @media (max-width: 768px) {
       .container {
         padding: 15px;
@@ -301,23 +335,54 @@
       .btn {
         width: 100%;
       }
+      
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1><i class="fas fa-map-marked-alt"></i> نظام تسجيل المواقع الجغرافية</h1>
+    <h1><i class="fas fa-map-marked-alt"></i> نظام تسجيل المخالفات والمواقع الجغرافية</h1>
     
     <div class="form-section">
       <form id="locationForm">
-        <div class="form-row">
-          <label for="name"><i class="fas fa-user"></i> الاسم الكامل</label>
-          <input type="text" id="name" required />
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="name"><i class="fas fa-user"></i> اسم صاحب المحضر</label>
+            <input type="text" id="name" required />
+          </div>
+          
+          <div class="form-row">
+            <label for="phone"><i class="fas fa-phone"></i> رقم الموبايل</label>
+            <input type="tel" id="phone" required />
+          </div>
         </div>
         
         <div class="form-row">
-          <label for="address"><i class="fas fa-map-pin"></i> العنوان</label>
-          <input type="text" id="address" required />
+          <label for="address"><i class="fas fa-map-pin"></i> العنوان التفصيلي</label>
+          <textarea id="address" rows="2" required></textarea>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-row">
+            <label for="idNumber"><i class="fas fa-id-card"></i> رقم البطاقة/الإقامة</label>
+            <input type="text" id="idNumber" required />
+          </div>
+          
+          <div class="form-row">
+            <label for="violationType"><i class="fas fa-exclamation-triangle"></i> نوع المخالفة</label>
+            <select id="violationType" required>
+              <option value="">اختر نوع المخالفة</option>
+              <option value="سرقة تيار">سرقة تيار</option>
+              <option value="مصدر عمومي">مصدر عمومي</option>
+              <option value="مخالفة شروط">مخالفة شروط</option>
+              <option value="هدم و بناء">هدم و بناء</option>
+              <option value="معطل">معطل</option>
+              <option value="معطل">تلاعب</option>
+            </select>
+          </div>
         </div>
         
         <div class="form-row">
@@ -343,13 +408,8 @@
         </div>
         
         <div class="form-row">
-          <label for="locationType"><i class="fas fa-tag"></i> نوع الموقع</label>
-          <select id="locationType">
-            <option value="منزل">منزل</option>
-            <option value="عمل">عمل</option>
-            <option value="متجر">متجر</option>
-            <option value="أخرى">أخرى</option>
-          </select>
+          <label for="notes"><i class="fas fa-edit"></i> ملاحظات إضافية</label>
+          <textarea id="notes" rows="3"></textarea>
         </div>
         
         <div class="btn-group">
@@ -369,14 +429,15 @@
     </div>
     
     <div class="data-section" style="overflow: auto;">
-      <h2><i class="fas fa-list"></i> السجلات المحفوظة</h2>
+      <h2><i class="fas fa-list"></i> سجلات المخالفات المحفوظة</h2>
       <div class="table-responsive">
         <table id="dataTable">
           <thead>
             <tr>
-              <th>الاسم</th>
-              <th>العنوان</th>
-              <th>نوع الموقع</th>
+              <th>اسم صاحب المحضر</th>
+              <th>رقم الموبايل</th>
+              <th>رقم البطاقة</th>
+              <th>نوع المخالفة</th>
               <th>الإحداثيات</th>
               <th>الوقت</th>
               <th>الخريطة</th>
@@ -396,17 +457,17 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
-      authDomain: "datareact-58e03.firebaseapp.com",
-      databaseURL: "https://datareact-58e03-default-rtdb.firebaseio.com",
-      projectId: "datareact-58e03",
-      storageBucket: "datareact-58e03.appspot.com",
-      messagingSenderId: "123456789012",
-      appId: "1:123456789012:web:abcdef1234567890abcdef"
-    };
+    // const firebaseConfig = {
+    //   apiKey: "AIzaSyDEXAMPLEEXAMPLEEXAMPLEEXAMPLE",
+    //   authDomain: "datareact-58e03.firebaseapp.com",
+    //   databaseURL: "https://datareact-58e03-default-rtdb.firebaseio.com",
+    //   projectId: "datareact-58e03",
+    //   storageBucket: "datareact-58e03.appspot.com",
+    //   messagingSenderId: "123456789012",
+    //   appId: "1:123456789012:web:abcdef1234567890abcdef"
+    // };
     
-    const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/locations.json";
+    const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/violations.json";
     const form = document.getElementById("locationForm");
     const tableBody = document.querySelector("#tableBody");
     const mapContainer = document.getElementById("map");
@@ -419,7 +480,7 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     
-    let marker;
+    let markers = [];
     let currentEditId = null;
     
     // Add click event to map
@@ -431,21 +492,26 @@
     
     // Initialize marker
     function updateMap(lat, lng) {
-      if (marker) {
-        marker.setLatLng([lat, lng]);
-      } else {
-        marker = L.marker([lat, lng], {
-          draggable: true
-        }).addTo(map);
-        
-        marker.on('dragend', function() {
-          const newLatLng = marker.getLatLng();
-          document.getElementById("coords").value = `${newLatLng.lat.toFixed(6)}, ${newLatLng.lng.toFixed(6)}`;
-        });
-      }
+      clearMarkers();
       
+      const newMarker = L.marker([lat, lng], {
+        draggable: true
+      }).addTo(map);
+      
+      newMarker.on('dragend', function() {
+        const newLatLng = newMarker.getLatLng();
+        document.getElementById("coords").value = `${newLatLng.lat.toFixed(6)}, ${newLatLng.lng.toFixed(6)}`;
+      });
+      
+      markers.push(newMarker);
       map.setView([lat, lng], 15);
       document.getElementById("mapOverlay").textContent = `الإحداثيات: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+    
+    // Clear all markers
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
     }
     
     // Get current location
@@ -486,11 +552,26 @@
       e.preventDefault();
       
       const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
       const address = document.getElementById("address").value.trim();
-      const locationType = document.getElementById("locationType").value;
+      const idNumber = document.getElementById("idNumber").value.trim();
+      const violationType = document.getElementById("violationType").value;
       const coordsInput = document.getElementById("coords").value.trim();
       const googleMapUrl = document.getElementById("googleMapUrl").value.trim();
+      const notes = document.getElementById("notes").value.trim();
       
+      // Validate required fields
+      if (!name || !phone || !address || !idNumber || !violationType) {
+        showToast("يرجى ملء جميع الحقول المطلوبة", 'error');
+        return;
+      }
+      
+      // Validate phone number
+const phoneRegex = /^(\+?20|0)?1[0125][0-9]{11}$/;
+if (!phoneRegex.test(phone)) {
+  showToast("يرجى إدخال رقم جوال صحيح (يبدأ بـ 010 أو 011 أو 012 أو 015 أو 01)", 'error');
+  return;
+}
       // Validate coordinates
       const coordsRegex = /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/;
       if (!coordsRegex.test(coordsInput)) {
@@ -518,17 +599,17 @@
         second: '2-digit'
       });
       
-      const accuracy = "GPS";
-      
       const data = { 
         name, 
+        phone,
         address, 
-        locationType,
+        idNumber,
+        violationType,
         latitude: lat, 
         longitude: lng, 
         googleMapUrl: googleMapUrl || null,
+        notes: notes || null,
         timestamp, 
-        accuracy, 
         source: currentEditId ? "تعديل يدوي" : "إدخال يدوي"
       };
       
@@ -538,7 +619,7 @@
         
         const method = currentEditId ? "PUT" : "POST";
         const url = currentEditId
-          ? `https://datareact-58e03-default-rtdb.firebaseio.com/locations/${currentEditId}.json`
+          ? `https://datareact-58e03-default-rtdb.firebaseio.com/violations/${currentEditId}.json`
           : firebaseUrl;
         
         const response = await fetch(url, {
@@ -568,7 +649,7 @@
     // Load data from Firebase
     async function loadData() {
       try {
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">جاري تحميل البيانات...</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">جاري تحميل البيانات...</td></tr>';
         
         const response = await fetch(firebaseUrl);
         const data = await response.json();
@@ -576,11 +657,28 @@
         tableBody.innerHTML = "";
         
         if (!data) {
-          tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد بيانات مسجلة</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">لا توجد بيانات مسجلة</td></tr>';
           return;
         }
         
+        // Clear existing markers and add all locations to map
+        clearMarkers();
         Object.entries(data).forEach(([key, entry]) => {
+          if (entry.latitude && entry.longitude) {
+            const marker = L.marker([entry.latitude, entry.longitude]).addTo(map);
+            
+            // Add popup with violation info
+            marker.bindPopup(`
+              <b>${entry.name || 'غير معروف'}</b><br>
+              <b>نوع المخالفة:</b> ${entry.violationType || 'غير محدد'}<br>
+              <b>التاريخ:</b> ${entry.timestamp || 'غير معروف'}<br>
+              <a href="https://maps.google.com?q=${entry.latitude},${entry.longitude}" target="_blank">فتح في خرائط جوجل</a>
+            `);
+            
+            markers.push(marker);
+          }
+          
+          // Create table row
           const row = document.createElement("tr");
           
           // تحديد رابط الخريطة الذي سيتم عرضه
@@ -599,8 +697,9 @@
           
           row.innerHTML = `
             <td>${entry.name || '--'}</td>
-            <td>${entry.address || '--'}</td>
-            <td>${entry.locationType || '--'}</td>
+            <td>${entry.phone || '--'}</td>
+            <td>${entry.idNumber || '--'}</td>
+            <td>${entry.violationType || '--'}</td>
             <td>${entry.latitude?.toFixed?.(6) || '--'}, ${entry.longitude?.toFixed?.(6) || '--'}</td>
             <td>${entry.timestamp || '--'}</td>
             <td>${mapLink}</td>
@@ -610,6 +709,9 @@
               </button>
               <button class="action-btn delete-btn" data-id="${key}" title="حذف">
                 <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="action-btn whatsapp-btn" data-id="${key}" title="مشاركة عبر الواتساب" onclick="shareViaWhatsapp('${key}')">
+                <i class="fab fa-whatsapp"></i>
               </button>
             </td>
           `;
@@ -624,16 +726,22 @@
         document.querySelectorAll(".delete-btn").forEach(btn => {
           btn.addEventListener("click", () => deleteEntry(btn.dataset.id));
         });
+        
+        // Fit map to show all markers
+        if (markers.length > 0) {
+          const group = new L.featureGroup(markers);
+          map.fitBounds(group.getBounds().pad(0.1));
+        }
       } catch (error) {
         console.error("Error loading data:", error);
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--danger-color);">حدث خطأ أثناء تحميل البيانات</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--danger-color);">حدث خطأ أثناء تحميل البيانات</td></tr>';
       }
     }
     
     // Edit entry
     async function editEntry(id) {
       try {
-        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/locations/${id}.json`);
+        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/violations/${id}.json`);
         const data = await response.json();
         
         if (!data) {
@@ -642,10 +750,13 @@
         }
         
         document.getElementById("name").value = data.name || '';
+        document.getElementById("phone").value = data.phone || '';
         document.getElementById("address").value = data.address || '';
-        document.getElementById("locationType").value = data.locationType || 'أخرى';
+        document.getElementById("idNumber").value = data.idNumber || '';
+        document.getElementById("violationType").value = data.violationType || '';
         document.getElementById("coords").value = `${data.latitude || ''}, ${data.longitude || ''}`;
         document.getElementById("googleMapUrl").value = data.googleMapUrl || '';
+        document.getElementById("notes").value = data.notes || '';
         
         if (data.latitude && data.longitude) {
           updateMap(data.latitude, data.longitude);
@@ -671,7 +782,7 @@
       }
       
       try {
-        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/locations/${id}.json`, {
+        const response = await fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/violations/${id}.json`, {
           method: "DELETE"
         });
         
@@ -683,6 +794,30 @@
         console.error("Error deleting entry:", error);
         showToast("حدث خطأ أثناء حذف السجل", 'error');
       }
+    }
+    
+    // Share via WhatsApp
+    function shareViaWhatsapp(id) {
+      fetch(`https://datareact-58e03-default-rtdb.firebaseio.com/violations/${id}.json`)
+        .then(response => response.json())
+        .then(data => {
+          const message = `*بيانات المخالفة*%0A%0A` +
+                         `*اسم صاحب المحضر:* ${data.name}%0A` +
+                         `*رقم الموبايل:* ${data.phone}%0A` +
+                         `*رقم البطاقة:* ${data.idNumber}%0A` +
+                         `*نوع المخالفة:* ${data.violationType}%0A` +
+                         `*العنوان:* ${data.address}%0A` +
+                         `*الإحداثيات:* ${data.latitude?.toFixed?.(6) || '--'}, ${data.longitude?.toFixed?.(6) || '--'}%0A` +
+                         `*التاريخ:* ${data.timestamp}%0A%0A` +
+                         `رابط الخريطة: ${data.googleMapUrl || `https://maps.google.com?q=${data.latitude},${data.longitude}`}`;
+          
+          const whatsappUrl = `https://wa.me/?text=${message}`;
+          window.open(whatsappUrl, '_blank');
+        })
+        .catch(error => {
+          console.error("Error sharing via WhatsApp:", error);
+          showToast("حدث خطأ أثناء مشاركة البيانات", 'error');
+        });
     }
     
     // Show toast notification

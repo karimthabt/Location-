@@ -368,7 +368,7 @@
         <div class="form-grid">
           <div class="form-row">
             <label for="idNumber"><i class="fas fa-id-card"></i> رقم البطاقة/الإقامة</label>
-            <input type="text" id="idNumber" required />
+            <input type="tel" id="idNumber" required />
           </div>
           
           <div class="form-row">
@@ -557,12 +557,6 @@
         return;
       }
       
-      // Validate phone number
-// const phoneRegex = /^(\+?20|0)?1[0125][0-9]{11}$/;
-// if (!phoneRegex.test(phone)) {
-//   showToast("يرجى إدخال رقم جوال صحيح (يبدأ بـ 010 أو 011 أو 012 أو 015 أو 01)", 'error');
-//   return;
-// }
       // Validate coordinates
       const coordsRegex = /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/;
       if (!coordsRegex.test(coordsInput)) {

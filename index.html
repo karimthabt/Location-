@@ -550,11 +550,7 @@
       const googleMapUrl = document.getElementById("googleMapUrl").value.trim();
       const notes = document.getElementById("notes").value.trim();
       
-      // Validate required fields
-      if (!name || !phone || !address || !idNumber || !violationType) {
-        showToast("يرجى ملء جميع الحقول المطلوبة", 'error');
-        return;
-      }
+    
       
       // Validate coordinates
       const coordsRegex = /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/;

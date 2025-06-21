@@ -325,7 +325,7 @@
       table {
         display: block;
         overflow-x: auto;
-        width: 1200px;
+        width: 1090px;
       }
       
       .btn-group {
@@ -356,7 +356,7 @@
           
           <div class="form-row">
             <label for="phone"><i class="fas fa-phone"></i> رقم الموبايل</label>
-            <input type="tel" id="phone" required />
+            <input type="number" id="phone" required />
           </div>
         </div>
         
@@ -368,7 +368,7 @@
         <div class="form-grid">
           <div class="form-row">
             <label for="idNumber"><i class="fas fa-id-card"></i> رقم البطاقة/الإقامة</label>
-            <input type="tel" id="idNumber" required />
+            <input type="number" id="idNumber" required />
           </div>
           
           <div class="form-row">
@@ -457,7 +457,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
 
-    
     const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/violations.json";
     const form = document.getElementById("locationForm");
     const tableBody = document.querySelector("#tableBody");

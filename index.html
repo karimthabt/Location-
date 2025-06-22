@@ -31,51 +31,45 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      
     }
 
     body {
       font-family: 'Tajawal', sans-serif;
-      background-color: #f5f7ff;
       color: var(--dark-color);
       line-height: 1.7;
+      overflow: hidden;
     }
-
 
     .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
     }
-*::-webkit-scrollbar {
-  display: none;
-}
+
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
     header {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
       text-align: center;
-      margin-bottom: 30px;
-      padding: 20px;
+      padding: 15px 25px;
       background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
       color: white;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    header::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-      transform: rotate(30deg);
+      max-width: 400px;
+      background: rgba(67, 97, 238, 0.9);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     h1 {
-      font-size: 2.2rem;
-      margin-bottom: 10px;
+      font-size: 1.5rem;
+      margin-bottom: 5px;
       position: relative;
       display: inline-block;
     }
@@ -83,41 +77,145 @@
     h1::after {
       content: '';
       position: absolute;
-      bottom: -10px;
+      bottom: -5px;
       right: 0;
-      width: 70px;
-      height: 4px;
+      width: 50px;
+      height: 3px;
       background-color: var(--accent-color);
       border-radius: 2px;
     }
 
     h1 i {
-      margin-left: 15px;
+      margin-left: 10px;
       color: #ffd166;
     }
 
-    .app-container {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 25px;
+    .map-container {
+      width: 100%;
+      height: 100%;
     }
 
-    .form-section {
-      background-color: white;
-      padding: 25px;
+    .map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .map-overlay {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px 15px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+      color: var(--secondary-color);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Control Buttons */
+    .control-buttons {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(67, 97, 238, 0.9);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .control-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+    }
+
+    .control-btn.active {
+      background: var(--accent-color);
+    }
+
+    /* Popup Containers */
+    .popup-container {
+      position: absolute;
+      z-index: 1000;
+      background: white;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      max-height: 90vh;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .form-popup {
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 400px;
+      max-width: 90vw;
+      padding: 20px;
       border-top: 5px solid var(--primary-color);
+    }
+
+    .table-popup {
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      width: 800px;
+      max-width: 90vw;
+      padding: 15px;
+    }
+
+    .popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .popup-title {
+      color: var(--secondary-color);
+      font-size: 1.3rem;
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray-color);
+      cursor: pointer;
       transition: var(--transition);
     }
 
-    .form-section:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    .close-btn:hover {
+      color: var(--danger-color);
     }
 
+    /* Form Styles */
     .form-row {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     label {
@@ -125,7 +223,7 @@
       margin-bottom: 8px;
       font-weight: 500;
       color: var(--secondary-color);
-      font-size: 1.05rem;
+      font-size: 1rem;
     }
 
     label i {
@@ -135,11 +233,11 @@
 
     input, select, textarea {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       border: 2px solid var(--light-gray);
       border-radius: var(--border-radius);
       font-family: 'Tajawal', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: var(--transition);
       background-color: white;
     }
@@ -159,12 +257,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 28px;
+      padding: 12px 24px;
       border: none;
       border-radius: var(--border-radius);
       font-family: 'Tajawal', sans-serif;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
       transition: var(--transition);
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -192,73 +290,48 @@
 
     .btn-group {
       display: flex;
-      gap: 15px;
-      margin-top: 25px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
-    .map-container {
+    .manual-label {
+      margin: 15px 0;
+      color: var(--gray-color);
+      text-align: center;
       position: relative;
-      height: 100%;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: var(--box-shadow);
-      border: 3px solid white;
     }
 
-    .map {
-      height: 100%;
-      width: 100%;
-    }
-
-    .map-overlay {
+    .manual-label::before,
+    .manual-label::after {
+      content: '';
       position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px 15px;
-      border-radius: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      font-weight: 600;
-      color: var(--secondary-color);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(0, 0, 0, 0.05);
+      top: 50%;
+      width: 30%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--light-gray), transparent);
     }
 
-    .data-section {
-      grid-column: 1 / -1;
-      margin-top: 30px;
+    .manual-label::before {
+      right: 0;
     }
 
-    h2 {
-      color: var(--secondary-color);
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--light-gray);
-      font-size: 1.6rem;
+    .manual-label::after {
+      left: 0;
     }
 
-    h2 i {
-      margin-left: 10px;
-      color: var(--primary-color);
-    }
-
+    /* Table Styles */
     .table-responsive {
       overflow-x: auto;
-      background-color: white;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      padding: 5px;
+      max-height: 70vh;
     }
 
     table {
       width: 100rem;
       border-collapse: collapse;
-      min-width: 800px;
     }
 
     th, td {
-      padding: 15px;
+      padding: 12px;
       text-align: center;
       border-bottom: 1px solid var(--light-gray);
     }
@@ -305,16 +378,6 @@
       transform: scale(1.1);
     }
 
-    .whatsapp-btn {
-      color: #25D366;
-      background-color: rgba(37, 211, 102, 0.1);
-    }
-
-    .whatsapp-btn:hover {
-      background-color: rgba(37, 211, 102, 0.2);
-      transform: scale(1.1);
-    }
-
     .map-link {
       color: var(--primary-color);
       text-decoration: none;
@@ -346,6 +409,7 @@
       margin-right: 5px;
     }
 
+    /* Toast Notification */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -396,67 +460,40 @@
       to { transform: rotate(360deg); }
     }
 
-    .manual-label {
-      margin: 20px 0;
-      color: var(--gray-color);
-      text-align: center;
-      position: relative;
-    }
-
-    .manual-label::before,
-    .manual-label::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 30%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--light-gray), transparent);
-    }
-
-    .manual-label::before {
-      right: 0;
-    }
-
-    .manual-label::after {
-      left: 0;
+    /* Healthy Icon */
+    .healthy-icon {
+      background-color: #25D366;
+      border-radius: 50%;
+      padding: 5px;
+      color: white;
     }
 
     /* Responsive Design */
-    @media (max-width: 1200px) {
-      .app-container {
-        grid-template-columns: 1fr;
-      }
-      
-      .map-container {
-        height: 500px;
-      }
-    }
-
     @media (max-width: 768px) {
+      header {
+        max-width: 90%;
+        padding: 10px 15px;
+      }
+      
       h1 {
-        font-size: 1.8rem;
-      }
-      table{
-        width: 100rem ;
-      }
-      .btn-group {
-        flex-direction: column;
+        font-size: 1.2rem;
       }
       
-      .btn {
-        width: 100%;
+      .form-popup, .table-popup {
+        width: 95vw;
       }
       
-      .form-section {
-        padding: 20px;
+      .control-buttons {
+        bottom: 10px;
+        right: 10px;
+      }
+      
+      .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
       }
     }
-    .healthy-icon {
-  background-color: #25D366;
-  border-radius: 50%;
-  padding: 5px;
-  color: white;
-}
   </style>
 </head>
 <body>
@@ -466,91 +503,104 @@
       <p>نظام متكامل لتسجيل وإدارة المخالفات حسب الموقع الجغرافي</p>
     </header>
 
-    <div class="app-container">
-      <!-- قسم النموذج -->
-      <div class="form-section">
-        <form id="locationForm">
-          <div class="form-row">
-            <label for="name"><i class="fas fa-user"></i> اسم صاحب المحضر</label>
-            <input type="text" id="name"  placeholder="أدخل الاسم الكامل"  />
-          </div>
-          
-          <div class="form-row">
-            <label for="phone"><i class="fas fa-phone"></i> رقم الموبايل</label>
-            <input type="tel" id="phone"  placeholder="مثال: 05XXXXXXXX" />
-          </div>
-          
-          <div class="form-row">
-            <label for="address"><i class="fas fa-map-pin"></i> العنوان التفصيلي</label>
-            <textarea id="address" rows="2"  placeholder="أدخل العنوان بالتفصيل"></textarea>
-          </div>
-          
-          <div class="form-row">
-            <label for="idNumber"><i class="fas fa-id-card"></i> رقم البطاقة/الإقامة</label>
-            <input type="number" id="idNumber"  placeholder="أدخل رقم الهوية" />
-          </div>
-          
-          <div class="form-row">
-            <label for="violationType"><i class="fas fa-exclamation-triangle"></i> نوع المخالفة</label>
-            <select id="violationType" >
-              <option value="">اختر نوع المخالفة</option>
-              <option value="سرقة تيار">سرقة تيار</option>
-              <option value="مصدر عمومي">مصدر عمومي</option>
-              <option value="مخالفة شروط">مخالفة شروط</option>
-              <option value="هدم و بناء">هدم و بناء</option>
-              <option value="معطل">معطل</option>
-              <option value="تلاعب">تلاعب</option>
-              <option value="سليم">سليم</option>
-
-            </select>
-          </div>
-          
-          <div class="form-row">
-            <label for="load"><i class="fas fa-bolt"></i> الأحمال (كيلوواط)</label>
-            <input type="text" id="load" step="0.01" min="0" placeholder="أدخل مقدار الأحمال" />
-          </div>
-          
-          <div class="form-row">
-            <label><i class="fas fa-map-marker-alt"></i> تحديد الموقع الجغرافي</label>
-            <div class="btn-group">
-              <button type="button" class="btn btn-primary" onclick="getLocation()">
-                <i class="fas fa-location-arrow"></i> تحديد الموقع تلقائيًا
-              </button>
-            </div>
-            
-            <p class="manual-label">أو</p>
-            <label for="coords">الإحداثيات (خط العرض, خط الطول)</label>
-            <input type="text" id="coords" placeholder="مثال: 24.7136, 46.6753"  />
-          </div>
-          
-          <div class="form-row">
-            <label for="notes"><i class="fas fa-edit"></i> ملاحظات إضافية</label>
-            <textarea id="notes" rows="3" placeholder="أي معلومات إضافية تريد إضافتها"></textarea>
-          </div>
-          
-          <div class="btn-group">
-            <button type="submit" class="btn btn-primary" id="submitBtn">
-              <i class="fas fa-save"></i> حفظ البيانات
-            </button>
-            <button type="reset" class="btn btn-secondary" id="resetBtn">
-              <i class="fas fa-undo"></i> إعادة تعيين
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- قسم الخريطة -->
-      <div class="map-container">
-        <div id="map" class="map"></div>
-        <div class="map-overlay" id="mapOverlay">
-          <i class="fas fa-hand-pointer"></i> انقر على الخريطة لتحديد الموقع
-        </div>
+    <!-- الخريطة -->
+    <div class="map-container">
+      <div id="map" class="map"></div>
+      <div class="map-overlay" id="mapOverlay">
       </div>
     </div>
 
-    <!-- قسم عرض البيانات -->
-    <div class="data-section">
-      <h2><i class="fas fa-list"></i> سجلات المخالفات المحفوظة</h2>
+    <!-- أزرار التحكم -->
+    <div class="control-buttons">
+      <button class="control-btn" id="formBtn" title="فتح نموذج الإدخال">
+        <i class="fas fa-plus"></i>
+      </button>
+      <button class="control-btn" id="tableBtn" title="فتح جدول البيانات">
+        <i class="fas fa-table"></i>
+      </button>
+    </div>
+
+    <!-- نافذة النموذج المنبثقة -->
+    <div class="popup-container form-popup" id="formPopup">
+      <div class="popup-header">
+        <h3 class="popup-title"><i class="fas fa-edit"></i> نموذج تسجيل المخالفة</h3>
+        <button class="close-btn" id="closeFormBtn">&times;</button>
+      </div>
+      <form id="locationForm">
+        <div class="form-row">
+          <label for="name"><i class="fas fa-user"></i> اسم صاحب المحضر</label>
+          <input type="text" id="name" placeholder="أدخل الاسم الكامل" />
+        </div>
+        
+        <div class="form-row">
+          <label for="phone"><i class="fas fa-phone"></i> رقم الموبايل</label>
+          <input type="tel" id="phone" placeholder="مثال: 05XXXXXXXX" />
+        </div>
+        
+        <div class="form-row">
+          <label for="address"><i class="fas fa-map-pin"></i> العنوان التفصيلي</label>
+          <textarea id="address" rows="2" placeholder="أدخل العنوان بالتفصيل"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <label for="idNumber"><i class="fas fa-id-card"></i> رقم البطاقة/الإقامة</label>
+          <input type="number" id="idNumber" placeholder="أدخل رقم الهوية" />
+        </div>
+        
+        <div class="form-row">
+          <label for="violationType"><i class="fas fa-exclamation-triangle"></i> نوع المخالفة</label>
+          <select id="violationType">
+            <option value="">اختر نوع المخالفة</option>
+            <option value="سرقة تيار">سرقة تيار</option>
+            <option value="مصدر عمومي">مصدر عمومي</option>
+            <option value="مخالفة شروط">مخالفة شروط</option>
+            <option value="هدم و بناء">هدم و بناء</option>
+            <option value="معطل">معطل</option>
+            <option value="تلاعب">تلاعب</option>
+            <option value="سليم">سليم</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <label for="load"><i class="fas fa-bolt"></i> الأحمال (كيلوواط)</label>
+          <input type="text" id="load" step="0.01" min="0" placeholder="أدخل مقدار الأحمال" />
+        </div>
+        
+        <div class="form-row">
+          <label><i class="fas fa-map-marker-alt"></i> تحديد الموقع الجغرافي</label>
+          <div class="btn-group">
+            <button type="button" class="btn btn-primary" onclick="getLocation()">
+              <i class="fas fa-location-arrow"></i> تحديد الموقع تلقائيًا
+            </button>
+          </div>
+          
+          <p class="manual-label">أو</p>
+          <label for="coords">الإحداثيات (خط العرض, خط الطول)</label>
+          <input type="text" id="coords" placeholder="مثال: 24.7136, 46.6753" />
+        </div>
+        
+        <div class="form-row">
+          <label for="notes"><i class="fas fa-edit"></i> ملاحظات إضافية</label>
+          <textarea id="notes" rows="3" placeholder="أي معلومات إضافية تريد إضافتها"></textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <i class="fas fa-save"></i> حفظ البيانات
+          </button>
+          <button type="reset" class="btn btn-secondary" id="resetBtn">
+            <i class="fas fa-undo"></i> إعادة تعيين
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- نافذة الجدول المنبثقة -->
+    <div class="popup-container table-popup" id="tablePopup">
+      <div class="popup-header">
+        <h3 class="popup-title"><i class="fas fa-list"></i> سجلات المخالفات المحفوظة</h3>
+        <button class="close-btn" id="closeTableBtn">&times;</button>
+      </div>
       <div class="table-responsive">
         <table id="dataTable">
           <thead>
@@ -575,13 +625,19 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-<script>
+  <script>
     const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/violations.json";
     const form = document.getElementById("locationForm");
     const tableBody = document.querySelector("#tableBody");
     const mapContainer = document.getElementById("map");
     const submitBtn = document.getElementById("submitBtn");
     const toast = document.getElementById("toast");
+    const formPopup = document.getElementById("formPopup");
+    const tablePopup = document.getElementById("tablePopup");
+    const formBtn = document.getElementById("formBtn");
+    const tableBtn = document.getElementById("tableBtn");
+    const closeFormBtn = document.getElementById("closeFormBtn");
+    const closeTableBtn = document.getElementById("closeTableBtn");
     
     // Initialize map
     let map = L.map(mapContainer).setView([24.7136, 46.6753], 5); // Default to Saudi Arabia
@@ -707,9 +763,8 @@
       const coordsInput = document.getElementById("coords").value.trim();
       const notes = document.getElementById("notes").value.trim();
       
-
       if(!name || !address){
-        showToast("يرجى تعبئة  الاسم و العنوان ", 'error');
+        showToast("يرجى تعبئة الاسم و العنوان ", 'error');
         return;
       }
 
@@ -890,11 +945,6 @@
           tableBody.appendChild(row);
         });
         
-        // Add event listeners to action buttons
-        document.querySelectorAll(".edit-btn").forEach(btn => {
-          btn.addEventListener("click", () => editEntry(btn.dataset.id));
-        });
-        
         // Fit map to show all markers
         if (markerClusters.getLayers().length > 0) {
           map.fitBounds(markerClusters.getBounds().pad(0.1));
@@ -931,8 +981,8 @@
         currentEditId = id;
         submitBtn.innerHTML = `<i class="fas fa-save"></i> تحديث البيانات`;
         
-        // Scroll to form
-        document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        // Show form popup
+        toggleFormPopup(true);
         
         showToast("تم تحميل البيانات للتعديل", 'success');
       } catch (error) {
@@ -941,7 +991,32 @@
       }
     }
     
-
+    // Toggle form popup
+    function toggleFormPopup(show) {
+      if (show) {
+        formPopup.style.display = 'block';
+        tablePopup.style.display = 'none';
+        formBtn.classList.add('active');
+        tableBtn.classList.remove('active');
+      } else {
+        formPopup.style.display = 'none';
+        formBtn.classList.remove('active');
+      }
+    }
+    
+    // Toggle table popup
+    function toggleTablePopup(show) {
+      if (show) {
+        tablePopup.style.display = 'block';
+        formPopup.style.display = 'none';
+        tableBtn.classList.add('active');
+        formBtn.classList.remove('active');
+      } else {
+        tablePopup.style.display = 'none';
+        tableBtn.classList.remove('active');
+      }
+    }
+    
     // Show toast notification
     function showToast(message, type = 'info') {
       toast.textContent = message;
@@ -961,6 +1036,13 @@
         currentEditId = null;
         submitBtn.innerHTML = `<i class="fas fa-save"></i> حفظ البيانات`;
       });
+      
+      // Control buttons event listeners
+      formBtn.addEventListener('click', () => toggleFormPopup(formPopup.style.display !== 'block'));
+      tableBtn.addEventListener('click', () => toggleTablePopup(tablePopup.style.display !== 'block'));
+      
+      closeFormBtn.addEventListener('click', () => toggleFormPopup(false));
+      closeTableBtn.addEventListener('click', () => toggleTablePopup(false));
     });
   </script>
 </body>

@@ -451,6 +451,12 @@
         padding: 20px;
       }
     }
+    .healthy-icon {
+  background-color: #25D366;
+  border-radius: 50%;
+  padding: 5px;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -466,7 +472,7 @@
         <form id="locationForm">
           <div class="form-row">
             <label for="name"><i class="fas fa-user"></i> اسم صاحب المحضر</label>
-            <input type="text" id="name"  placeholder="أدخل الاسم الكامل" />
+            <input type="text" id="name"  placeholder="أدخل الاسم الكامل"  />
           </div>
           
           <div class="form-row">
@@ -494,6 +500,8 @@
               <option value="هدم و بناء">هدم و بناء</option>
               <option value="معطل">معطل</option>
               <option value="تلاعب">تلاعب</option>
+              <option value="سليم">سليم</option>
+
             </select>
           </div>
           
@@ -548,8 +556,6 @@
           <thead>
             <tr>
               <th>اسم صاحب المحضر</th>
-              <th>رقم الموبايل</th>
-              <th>رقم البطاقة</th>
               <th>نوع المخالفة</th>
               <th>الأحمال</th>
               <th>الإحداثيات</th>
@@ -570,7 +576,7 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-  <script>
+<script>
     const firebaseUrl = "https://datareact-58e03-default-rtdb.firebaseio.com/violations.json";
     const form = document.getElementById("locationForm");
     const tableBody = document.querySelector("#tableBody");
@@ -585,7 +591,28 @@
     }).addTo(map);
     
     let markers = [];
-    let markerClusters = L.markerClusterGroup();
+    let markerClusters = L.markerClusterGroup({
+      iconCreateFunction: function(cluster) {
+        const childMarkers = cluster.getAllChildMarkers();
+        const hasHealthy = childMarkers.some(marker => marker.options.isHealthy);
+        
+        return L.divIcon({
+          html: `<div style="background-color: ${hasHealthy ? '#25D366' : '#ef233c'}; 
+                 color: white; 
+                 border-radius: 50%; 
+                 width: 40px; 
+                 height: 40px; 
+                 display: flex; 
+                 align-items: center; 
+                 justify-content: center;
+                 font-weight: bold;
+                 border: 2px solid white;
+                 box-shadow: 0 0 5px rgba(0,0,0,0.3);">${cluster.getChildCount()}</div>`,
+          className: 'marker-cluster',
+          iconSize: L.point(40, 40)
+        });
+      }
+    });
     let currentEditId = null;
     let violationsData = {};
     
@@ -606,7 +633,13 @@
       }
       
       const newMarker = L.marker([lat, lng], {
-        draggable: isFromForm
+        draggable: isFromForm,
+        icon: L.divIcon({
+          className: 'single-marker',
+          html: '<i class="fas fa-map-marker-alt" style="color: #ef233c; font-size: 32px;"></i>',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        })
       });
       
       if (isFromForm) {
@@ -675,6 +708,12 @@
       const coordsInput = document.getElementById("coords").value.trim();
       const notes = document.getElementById("notes").value.trim();
       
+
+      if(!name || !address){
+        showToast("يرجى تعبئة كافة الحقول", 'error');
+        return;
+      }
+
       // Validate coordinates
       const coordsRegex = /^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/;
       if (!coordsRegex.test(coordsInput)) {
@@ -786,7 +825,25 @@
         // Add markers to map with clustering
         Object.entries(violationsByLocation).forEach(([locationKey, violations]) => {
           const [lat, lng] = locationKey.split(",").map(Number);
-          const marker = updateMap(lat, lng, false);
+          const isHealthy = violations.some(v => v.violationType === 'سليم');
+          
+          // Create custom icon
+          const icon = L.divIcon({
+            className: 'custom-marker',
+            html: `<i class="fas ${isHealthy ? 'fa-check-circle' : 'fa-exclamation-circle'}" 
+                  style="color: ${isHealthy ? '#25D366' : '#ef233c'}; 
+                  background-color: white; 
+                  border-radius: 50%; 
+                  padding: 5px;
+                  font-size: 24px;"></i>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+          });
+          
+          const marker = L.marker([lat, lng], { 
+            icon: icon,
+            isHealthy: isHealthy
+          });
           
           // Create popup content
           let popupContent = `<div style="max-width: 250px;"><b>الموقع:</b> ${locationKey}<br>`;
@@ -796,7 +853,9 @@
           violations.forEach(violation => {
             popupContent += `<li style="margin-bottom: 5px;">
               <b>${violation.name || 'غير معروف'}</b><br>
-              <small>${violation.violationType || 'غير محدد'} - ${violation.timestamp || 'غير معروف'}</small>
+              <small style="color: ${violation.violationType === 'سليم' ? '#25D366' : '#ef233c'}">
+                ${violation.violationType || 'غير محدد'} - ${violation.timestamp || 'غير معروف'}
+              </small>
             </li>`;
           });
           
@@ -823,9 +882,7 @@
           
           row.innerHTML = `
             <td>${entry.name || '--'}</td>
-            <td>${entry.phone || '--'}</td>
-            <td>${entry.idNumber || '--'}</td>
-            <td>${entry.violationType || '--'}</td>
+            <td style="color: ${entry.violationType === 'سليم' ? '#25D366' : 'inherit'}">${entry.violationType || '--'}</td>
             <td>${entry.load || '--'}</td>
             <td>${entry.latitude?.toFixed?.(6) || '--'}, ${entry.longitude?.toFixed?.(6) || '--'}</td>
             <td>${entry.timestamp || '--'}</td>

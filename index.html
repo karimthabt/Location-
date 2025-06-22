@@ -561,7 +561,6 @@
               <th>الإحداثيات</th>
               <th>الوقت</th>
               <th>الخريطة</th>
-              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -887,14 +886,6 @@
             <td>${entry.latitude?.toFixed?.(6) || '--'}, ${entry.longitude?.toFixed?.(6) || '--'}</td>
             <td>${entry.timestamp || '--'}</td>
             <td>${mapLink}</td>
-            <td>
-              <button class="action-btn edit-btn" data-id="${key}" title="تعديل">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="action-btn whatsapp-btn" data-id="${key}" title="مشاركة عبر الواتساب" onclick="shareViaWhatsapp('${key}')">
-                <i class="fab fa-whatsapp"></i>
-              </button>
-            </td>
           `;
           tableBody.appendChild(row);
         });

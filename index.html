@@ -941,29 +941,7 @@
       }
     }
     
-    // Share via WhatsApp
-    function shareViaWhatsapp(id) {
-      const entry = violationsData[id];
-      if (!entry) {
-        showToast("تعذر العثور على بيانات المخالفة", 'error');
-        return;
-      }
-      
-      const message = `*بيانات المخالفة*%0A%0A` +
-                     `*اسم صاحب المحضر:* ${entry.name}%0A` +
-                     `*رقم الموبايل:* ${entry.phone}%0A` +
-                     `*رقم البطاقة:* ${entry.idNumber}%0A` +
-                     `*نوع المخالفة:* ${entry.violationType}%0A` +
-                     `*الأحمال:* ${entry.load || 'غير محدد'}%0A` +
-                     `*العنوان:* ${entry.address}%0A` +
-                     `*الإحداثيات:* ${entry.latitude?.toFixed?.(6) || '--'}, ${entry.longitude?.toFixed?.(6) || '--'}%0A` +
-                     `*التاريخ:* ${entry.timestamp}%0A%0A` +
-                     `رابط الخريطة: https://maps.google.com?q=${entry.latitude},${entry.longitude}`;
-      
-      const whatsappUrl = `https://wa.me/?text=${message}`;
-      window.open(whatsappUrl, '_blank');
-    }
-    
+
     // Show toast notification
     function showToast(message, type = 'info') {
       toast.textContent = message;
